@@ -2,8 +2,11 @@ package com.tericcabrel.authapi.services;
 
 import com.tericcabrel.authapi.dtos.LoginUserDto;
 import com.tericcabrel.authapi.dtos.RegisterUserDto;
+import com.tericcabrel.authapi.entities.Role;
+import com.tericcabrel.authapi.entities.RoleEnum;
 import com.tericcabrel.authapi.entities.User;
 import com.tericcabrel.authapi.repositories.UserRepository;
+import com.tericcabrel.authapi.repositories.RoleRepository;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -11,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class AuthenticationService {
@@ -28,14 +32,23 @@ public class AuthenticationService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public User signup(RegisterUserDto input) {
+
+    public User signup(RegisterUserDto input, RoleRepository roleRepository) {
+        Optional<Role> optionalRole = roleRepository.findByName(RoleEnum.USER);
+
+        if (optionalRole.isEmpty()) {
+            return null;
+        }
+
         var user = new User()
-            .setFullName(input.getFullName())
-            .setEmail(input.getEmail())
-            .setPassword(passwordEncoder.encode(input.getPassword()));
+                .setFullName(input.getFullName())
+                .setEmail(input.getEmail())
+                .setPassword(passwordEncoder.encode(input.getPassword()))
+                .setRole(optionalRole.get());
 
         return userRepository.save(user);
     }
+
 
     public User authenticate(LoginUserDto input) {
         authenticationManager.authenticate(
