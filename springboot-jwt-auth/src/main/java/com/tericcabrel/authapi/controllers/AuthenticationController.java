@@ -3,6 +3,7 @@ package com.tericcabrel.authapi.controllers;
 import com.tericcabrel.authapi.entities.User;
 import com.tericcabrel.authapi.dtos.LoginUserDto;
 import com.tericcabrel.authapi.dtos.RegisterUserDto;
+import com.tericcabrel.authapi.repositories.RoleRepository;
 import com.tericcabrel.authapi.responses.LoginResponse;
 import com.tericcabrel.authapi.services.AuthenticationService;
 import com.tericcabrel.authapi.services.JwtService;
@@ -17,15 +18,17 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthenticationController {
     private final JwtService jwtService;
     private final AuthenticationService authenticationService;
+    private final RoleRepository roleRepository;
 
-    public AuthenticationController(JwtService jwtService, AuthenticationService authenticationService) {
+    public AuthenticationController(JwtService jwtService, AuthenticationService authenticationService, RoleRepository roleRepository) {
         this.jwtService = jwtService;
         this.authenticationService = authenticationService;
+        this.roleRepository = roleRepository;
     }
 
     @PostMapping("/signup")
     public ResponseEntity<User> register(@RequestBody RegisterUserDto registerUserDto) {
-        User registeredUser = authenticationService.signup(registerUserDto);
+        User registeredUser = authenticationService.signup(registerUserDto, roleRepository);
 
         return ResponseEntity.ok(registeredUser);
     }
