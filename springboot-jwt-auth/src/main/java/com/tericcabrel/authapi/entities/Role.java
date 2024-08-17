@@ -28,6 +28,23 @@ public class Role {
     @UpdateTimestamp
     @Column(name = "updated_at")
     private Date updatedAt;
+    public Role setName(RoleEnum name) {
+        this.name = name;
+        return this;
+    }
+
+    public RoleEnum getName() {
+        return name;
+    }
+
+    public Role setDescription(String description) {
+        this.description = description;
+        return this;
+    }
+
+    public String getDescription() {
+        return description;
+    }
 
     // Getters and setters here....
 }
